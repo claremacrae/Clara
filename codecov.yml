@@ -4,3 +4,4 @@ codecov:
 coverage:
   ignore:
     - "src/*"
+    - "third_party/catch.hpp"
