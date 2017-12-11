@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <cctype>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -17,6 +18,14 @@ void create_empty_file(std::string const& path) {
 
 const std::string separator = "--sep--";
 const std::string logfile_prefix = "--log-file=";
+const std::string project_name = "Clara";
+
+std::string to_lower(std::string in) {
+    for (auto& c : in) {
+        c = std::tolower(c);
+    }
+    return in;
+}
 
 bool starts_with(std::string const& str, std::string const& pref) {
     return str.find(pref) == 0;
@@ -35,14 +44,13 @@ int parse_log_file_arg(std::string const& arg) {
     }
 }
 
-std::string catch_path(std::string path) {
-    auto start = path.find("catch");
-    // try capitalized instead
+std::string project_path(std::string path) {
+    auto start = path.find(project_name);
     if (start == std::string::npos) {
-        start = path.find("Catch");
+        start = path.find(to_lower(project_name));
     }
     if (start == std::string::npos) {
-        throw std::domain_error("Couldn't find Catch's base path");
+        throw std::domain_error("Couldn't find project's base path");
     }
     auto end = path.find_first_of("\\/", start);
     return path.substr(0, end);
@@ -96,5 +104,5 @@ int main(int argc, char** argv) {
         return lhs + ' ' + rhs;
     });
 
-    exec_cmd(cmdline, num, windowsify_path(catch_path(args[0])));
+    exec_cmd(cmdline, num, windowsify_path(project_path(args[0])));
 }
